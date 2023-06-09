@@ -16,6 +16,7 @@ const usermgt = new UserMGT(
     config.diagrams.path,
 );
 const fs = require('fs');
+const onExit = require('signal-exit');
 
 function sendMail(to, subject, content) {
     console.log(`Sending email to queue: ${to} : ${subject}`)
@@ -599,6 +600,9 @@ function main() {
     ws.initialize(config, usermgt, html, sendmail);
 
     const server = new httpServer(config.use_ssl_socket, config.socket.address, config.socket.port, config.socket.cert, config.socket.key, HTTP_callback, ws.WS_callback);
+    onExit((code, signal) => {
+        usermgt.saveSync();
+    });
 }
 
 main()
